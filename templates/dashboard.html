@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club Membership Management System</title>
+    <link rel="stylesheet" href="/static/css/profile.css">
+</head>
+<body>
+    <nav>
+    <a href="{{ url_for('app.dashboard') }}"><type="button"> Home </button></a>
+    <a href="{{ url_for('app.profile') }}"><type="button"> Profile </button></a>
+    <a href="{{ url_for('app.logout') }}"><type="button"> Logout </button></a>
+    </nav>
+
+    <div class="index-container">
+        <h1>Welcome to the Club Membership Management System</h1>
+        <p>Manage your profile, view activities, and stay connected with club members.</p>
+</body>

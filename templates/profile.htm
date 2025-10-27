@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="/static/css/profile.css">
+</head>
+<body>
+    <nav>
+    <a href="{{ url_for('app.dashboard') }}"><type="button"> Home </button></a>
+    <a href="{{ url_for('app.profile') }}"><type="button"> Profile </button></a>
+    <a href="{{ url_for('app.logout') }}"><type="button"> Logout </button></a>
+    </nav>
+
+
+    <div class="profile-container">
+        <h1>{{ user.name }}'s Profile</h1>
+        <p>Email: {{ user.email }}</p>
+        <p>Joined: {{ user.joined_date }}</p>
+        
+        <h2>About Me</h2>
+        <p>{{ user.about_me }}</p>
+        
+        <h2>Recent Activities</h2>
+        <ul>
+            {% for activity in user.recent_activities %}
+                <li>{{ activity }}</li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('app.update_profile') }}"><button type="button">Edit Profile</button></a>
+        
+    </div>
