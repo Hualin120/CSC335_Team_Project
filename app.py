@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flask
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
@@ -45,7 +45,7 @@ def admin_required(f):
 
 
 
-@app.route('/admin')
+@app.route('/admin_dashboard')
 @login_required
 @admin_required
 def admin_dashboard():
@@ -125,21 +125,18 @@ def dashboard():
     return render_template('dashboard.html')
 
 
-@app.route('/admin')
-@login_required
-@admin_required
-def admin_dashboard():
-    return render_template('admin_dashboard.html')
-
-
 
 @app.route('/profile')
 @login_required
+def profile():
+     return render_template('profile.html')
 
 
 
-@app.route('/update_profile', methods=['GET', 'POST'])
-@login_required
+'''@app.route('/update_profile', methods=['GET', 'POST'])
+@login_required'''
 
 
 
+if __name__ == '__main__':
+    app.run(debug=True)
