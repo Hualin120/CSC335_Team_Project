@@ -1,4 +1,5 @@
 Flask
 Flask-WTF
-Flask-SQLAlchemy
 Flask-Login
+flask-mysqldb
+mysqlclient
