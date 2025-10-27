@@ -3,4 +3,3 @@ Flask-WTF
 Flask-Login
 flask-mysqldb
 mysqlclient
-python-dotenv

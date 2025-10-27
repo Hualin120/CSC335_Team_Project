@@ -5,22 +5,16 @@ import MySQLdb.cursors
 import re
 from functools import wraps
 from flask import abort
-import os
-from dotenv import load_dotenv
 
 
 app = Flask(__name__)
 
-load_dotenv()
-
-app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST', 'localhost')
-app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER', 'root')
-app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD', '')
-app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB', 'flaskdb')
-app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key')
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'B00mB00m'
+app.config['MYSQL_DB'] = 'flaskdb'
 
 mysql = MYSQL(app)
-
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
