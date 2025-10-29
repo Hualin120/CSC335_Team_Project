@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Hondacrv@14'
+app.config['MYSQL_PASSWORD'] = 'QQMK983648574'
 app.config['MYSQL_DB'] = 'club_management'
 app.config['SECRET_KEY'] = 'dev_secret_key'
 mysql = MySQL(app)
@@ -104,7 +104,7 @@ def register():
         elif not re.match(r'[A-Za-z0-9]+', username):
             msg = 'name must contain only characters and numbers !'
         else:
-            cursor.execute('INSERT INTO user VALUES (NULL, %s, %s, %s, "user")', (username, password, email))
+            cursor.execute('INSERT INTO user (username, password, email, role) VALUES (%s, %s, %s, "student")', (username, password, email))
             mysql.connection.commit()
             msg = 'You have successfully registered !'
             
