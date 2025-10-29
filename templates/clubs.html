@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Clubs{% endblock %}
+{% block content %}
+<h2>Clubs</h2>
+<div class="grid">
+  {% for c in clubs %}
+    <div class="card">
+      <h3>{{ c.club_name }}</h3>
+      <p class="muted">{{ c.description or 'No description.' }}</p>
+
+      {% set m = memberships.get(c.club_id) %}
+{% if m %}
+  <p>Status: <strong>{{ m.status }}</strong>{% if m.status=='active' %} — Dues Paid: <strong>{{ 1 if m.dues_paid else 0 }}</strong>{% endif %}</p>
+{% else %}
+  {% if current_user.role == 'student' %}
+    <form method="post" action="{{ url_for('join_club', club_id=c.club_id) }}">
+      <button class="btn">Request to Join</button>
+    </form>
+  {% endif %}
+{% endif %}
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
