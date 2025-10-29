@@ -11,9 +11,9 @@ app = Flask(__name__)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'QQMK983648574'
+app.config['MYSQL_PASSWORD'] = 'Hondacrv@14'
 app.config['MYSQL_DB'] = 'club_management'
-
+app.config['SECRET_KEY'] = 'dev_secret_key'
 mysql = MySQL(app)
 
 login_manager = LoginManager(app)
@@ -29,10 +29,10 @@ class User(UserMixin):
 @login_manager.user_loader
 def load_user(user_id):
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('SELECT * FROM accounts WHERE id = %s', (user_id,))
+    cursor.execute('SELECT * FROM user WHERE user_id = %s', (user_id,))
     account = cursor.fetchone()
     if account:
-        return User(id=account['id'], username=account['username'], role=account['role'])
+        return User(id=account['user_id'], username=account['username'], role=account['role'])
     return None
 
 
@@ -41,7 +41,7 @@ def load_user(user_id):
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or current_user.role != 'admin':
+        if not current_user.is_authenticated or current_user.role != 'club_admin':
             abort(403)  # Forbidden
         return f(*args, **kwargs)
     return decorated_function
@@ -71,12 +71,12 @@ def login():
         password = request.form['password']
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute(
-            'SELECT * FROM accounts WHERE username = %s AND password = %s', (username, password,)
+            'SELECT * FROM user WHERE username = %s AND password = %s', (username, password,)
         )
         account = cursor.fetchone()
 
         if account:
-            user = User(account['id'], account['username'], account['role'])
+            user = User(account['user_id'], account['username'], account['role'])
             login_user(user)
             msg = 'Logged in successfully!'
             return redirect(url_for('dashboard'))
@@ -94,7 +94,7 @@ def register():
         email = request.form['email']
 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM accounts WHERE username = %s', (username, ))
+        cursor.execute('SELECT * FROM user WHERE username = %s', (username, ))
         account = cursor.fetchone()
         
         if account:
@@ -104,7 +104,7 @@ def register():
         elif not re.match(r'[A-Za-z0-9]+', username):
             msg = 'name must contain only characters and numbers !'
         else:
-            cursor.execute('INSERT INTO accounts VALUES (NULL, %s, %s, %s, "user")', (username, password, email))
+            cursor.execute('INSERT INTO user VALUES (NULL, %s, %s, %s, "user")', (username, password, email))
             mysql.connection.commit()
             msg = 'You have successfully registered !'
             
