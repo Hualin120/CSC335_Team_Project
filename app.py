@@ -14,7 +14,7 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'B00mB00m'
 app.config['MYSQL_DB'] = 'flaskdb'
 
-mysql = MYSQL(app)
+mysql = MySQL(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
