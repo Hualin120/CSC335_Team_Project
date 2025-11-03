@@ -1,19 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Club Membership Management System</title>
-    <link rel="stylesheet" href="/static/css/profile.css">
-</head>
-<body>
-    <nav>
-    <a href="{{ url_for('dashboard') }}"><type="button"> Home </button></a>
-    <a href="{{ url_for('profile') }}"><type="button"> Profile </button></a>
-    <a href="{{ url_for('logout') }}"><type="button"> Logout </button></a>
-    </nav>
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<h1>Admin Dashboard</h1>
 
-    <div class="index-container">
-        <h1>Welcome to the Club Membership Management System</h1>
-        <p>Manage your profile, view activities, and stay connected with club members.</p>
-</body>
+{% if not summary %}
+  <p class="muted">You are not the creator of any clubs yet. Insert a row into <code>clubs</code> with your <code>created_by = {{ current_user.id }}</code> to see data here.</p>
+{% else %}
+  <div class="grid">
+    {% for s in summary %}
+      <div class="card">
+        <h3>{{ s.club_name }}</h3>
+        <p>Active Members: <strong>{{ s.total_active }}</strong></p>
+        <p>Pending Requests: <strong>{{ s.total_pending }}</strong></p>
+        <p>Dues Paid / Unpaid: <strong>{{ s.dues_paid }}</strong> / <strong>{{ s.dues_unpaid }}</strong></p>
+        <p>Events: <strong>{{ s.events_count }}</strong></p>
+        <p>Total RSVP Yes: <strong>{{ s.total_yes_rsvp }}</strong></p>
+
+        <p>
+          <a class="btn" href="{{ url_for('admin_members') }}?club_id={{ s.club_id }}">Manage Members</a>
+          <a class="btn secondary" href="{{ url_for('admin_new_event') }}?club_id={{ s.club_id }}">New Event</a>
+          <a class="btn secondary" href="{{ url_for('admin_new_announcement') }}?club_id={{ s.club_id }}">New Announcement</a>
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}
