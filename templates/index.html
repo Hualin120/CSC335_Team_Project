@@ -1,13 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Club Membership Management System</title>
-    <link rel="stylesheet" href="/static/css/profile.css">
-</head>
-<body>
-      <p><a href="{{ url_for('login') }}"><button>Log In</button></a>
-    or <a href="{{ url_for('register') }}"><button>Register</button></a> to get started.</p>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<h1>Welcome to the Club Membership Management System</h1>
+
+<p>
+    <a href="{{ url_for('login') }}"><button>Log In</button></a>
+    or
+    <a href="{{ url_for('register') }}"><button>Register</button></a>
+    to get started.
+</p>
+{% endblock %}

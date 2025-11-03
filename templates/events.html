@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Events{% endblock %}
+{% block content %}
+<h2>Events</h2>
+
+<div class="grid">
+  {% for e in events %}
+    <div class="card">
+      <h3>{{ e.event_name }}</h3>
+      <p class="muted">{{ e.club_name }} — {{ e.event_date }}</p>
+      <p>{{ e.description }}</p>
+      <p>RSVP Yes: <strong>{{ e.yes_count }}</strong></p>
+
+      <form method="post" action="{{ url_for('rsvp_event', event_id=e.event_id) }}">
+        <label for="rsvp-{{ e.event_id }}">Your RSVP:</label>
+        <select id="rsvp-{{ e.event_id }}" name="rsvp">
+          <option value="yes"   {{ 'selected' if my_rsvp.get(e.event_id)=='yes' else '' }}>Yes</option>
+          <option value="maybe" {{ 'selected' if my_rsvp.get(e.event_id)=='maybe' else '' }}>Maybe</option>
+          <option value="no"    {{ 'selected' if my_rsvp.get(e.event_id)=='no' else '' }}>No</option>
+        </select>
+        <button class="btn" type="submit">Save RSVP</button>
+      </form>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

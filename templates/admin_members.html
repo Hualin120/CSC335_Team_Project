@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Manage Members{% endblock %}
+{% block content %}
+<h2>Manage Members</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Status</th>
+      <th>Dues Paid</th>
+      <th>Joined</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for m in members %}
+    <tr>
+      <td>{{ m.username }}</td>
+      <td>{{ m.email }}</td>
+      <td>{{ m.status }}</td>
+      <td>{{ 1 if m.dues_paid else 0 }}</td>
+      <td>{{ m.joined_at }}</td>
+      <td>
+        {% if m.status == 'pending' %}
+          <form method="post" action="{{ url_for('admin_approve_member', member_id=m.member_id) }}" style="display:inline">
+            <input type="hidden" name="club_id" value="{{ club_id }}">
+            <button class="btn">Approve</button>
+          </form>
+          <form method="post" action="{{ url_for('admin_deny_member', member_id=m.member_id) }}" style="display:inline">
+            <input type="hidden" name="club_id" value="{{ club_id }}">
+            <button class="btn secondary">Deny</button>
+          </form>
+        {% else %}
+          <form method="post" action="{{ url_for('admin_toggle_dues', member_id=m.member_id) }}" style="display:inline">
+            <input type="hidden" name="club_id" value="{{ club_id }}">
+            <button class="btn">Toggle Dues</button>
+          </form>
+          <form method="post" action="{{ url_for('admin_remove_member', member_id=m.member_id) }}" style="display:inline">
+            <input type="hidden" name="club_id" value="{{ club_id }}">
+            <button class="btn warn">Remove</button>
+          </form>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
