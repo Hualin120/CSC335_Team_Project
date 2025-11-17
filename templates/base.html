@@ -43,7 +43,6 @@
       {% if current_user.is_authenticated %}
         <a href="{{ url_for('dashboard') }}" style="color:#e5e7eb; text-decoration:none; padding:6px 10px; border-radius:6px;">Home</a>
         <a href="{{ url_for('clubs') }}" style="color:#e5e7eb; text-decoration:none; padding:6px 10px; border-radius:6px;">Clubs</a>
-        <a href="{{ url_for('events') }}" style="color:#e5e7eb; text-decoration:none; padding:6px 10px; border-radius:6px;">Events</a>
         <a href="{{ url_for('announcements') }}" style="color:#e5e7eb; text-decoration:none; padding:6px 10px; border-radius:6px;">Announcements</a>
         {% if current_user.role == 'club_admin' %}
           <a href="{{ url_for('admin_dashboard') }}" style="color:#e5e7eb; text-decoration:none; padding:6px 10px; border-radius:6px;">Admin</a>

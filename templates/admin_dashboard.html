@@ -1,28 +1,75 @@
 {% extends "base.html" %}
 {% block title %}Admin Dashboard{% endblock %}
+
 {% block content %}
-<h1>Admin Dashboard</h1>
+  <h1 style="margin-bottom:14px;">Admin Dashboard</h1>
 
-{% if not summary %}
-  <p class="muted">You are not the creator of any clubs yet. Insert a row into <code>clubs</code> with your <code>created_by = {{ current_user.id }}</code> to see data here.</p>
-{% else %}
-  <div class="grid">
-    {% for s in summary %}
+  <p style="text-align:right; margin-bottom:16px;">
+    <a class="btn" href="{{ url_for('admin_new_club') }}">+ Create New Club</a>
+  </p>
+
+  {% if not summary or summary|length == 0 %}
+    <div class="card">
+      <h3 style="margin:0 0 6px;">No Clubs Yet</h3>
+      <p class="muted" style="margin:0 0 12px;">
+        You don’t appear to be the creator of any clubs. Add a row to <code>clubs</code> with
+        your <code>created_by = {{ current_user.id }}</code> to see stats here.
+      </p>
+      <p class="muted" style="margin:0;">
+        (Coming soon: a “Create Club” screen.)
+      </p>
+      <a class="btn" href="{{ url_for('admin_new_club') }}">Create new club</a>
+    </div>
+  {% else %}
+    {# ===== Top summary ===== #}
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom:14px;">
       <div class="card">
-        <h3>{{ s.club_name }}</h3>
-        <p>Active Members: <strong>{{ s.total_active }}</strong></p>
-        <p>Pending Requests: <strong>{{ s.total_pending }}</strong></p>
-        <p>Dues Paid / Unpaid: <strong>{{ s.dues_paid }}</strong> / <strong>{{ s.dues_unpaid }}</strong></p>
-        <p>Events: <strong>{{ s.events_count }}</strong></p>
-        <p>Total RSVP Yes: <strong>{{ s.total_yes_rsvp }}</strong></p>
-
-        <p>
-          <a class="btn" href="{{ url_for('admin_members') }}?club_id={{ s.club_id }}">Manage Members</a>
-          <a class="btn secondary" href="{{ url_for('admin_new_event') }}?club_id={{ s.club_id }}">New Event</a>
-          <a class="btn secondary" href="{{ url_for('admin_new_announcement') }}?club_id={{ s.club_id }}">New Announcement</a>
-        </p>
+        <div class="muted" style="font-size:12px; margin-bottom:6px;">Total Clubs</div>
+        <div style="font-size:28px; font-weight:700;">{{ summary|length }}</div>
       </div>
-    {% endfor %}
-  </div>
-{% endif %}
+      <div class="card">
+        <div class="muted" style="font-size:12px; margin-bottom:6px;">Active Members (All Clubs)</div>
+        <div style="font-size:28px; font-weight:700;">{{ summary|sum(attribute='total_active') }}</div>
+      </div>
+      <div class="card">
+        <div class="muted" style="font-size:12px; margin-bottom:6px;">Pending Requests (All Clubs)</div>
+        <div style="font-size:28px; font-weight:700;">{{ summary|sum(attribute='total_pending') }}</div>
+      </div>
+    </div>
+
+    
+    <!-- Per-club -->
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+      {% for s in summary %}
+        <div class="card" style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <h3 style="margin:0; display:flex; align-items:center; gap:8px;">
+              {{ s.club_name }}
+              <!-- NEW: owner/admin chip -->
+              <span style="font-size:11px; background:#e5e7eb; color:#111827; padding:3px 8px; border-radius:9999px;">
+                You (Owner)
+              </span>
+            </h3>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <span class="muted" style="font-size:12px; background:#f3f4f6; padding:4px 8px; border-radius:9999px;">
+                Active: <strong style="color:#111827;">{{ s.total_active }}</strong>
+              </span>
+              <span class="muted" style="font-size:12px; background:#fffbeb; color:#92400e; padding:4px 8px; border-radius:9999px;">
+                Pending: <strong style="color:#92400e;">{{ s.total_pending }}</strong>
+              </span>
+            </div>
+          </div>
+
+          <div class="muted" style="font-size:13px;">
+            Announcements posted: <strong>{{ s.announcements_count }}</strong>
+          </div>
+
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:2px;">
+            <a class="btn" href="{{ url_for('admin_members') }}?club_id={{ s.club_id }}">Manage Members</a>
+            <a class="btn" href="{{ url_for('admin_new_announcement') }}?club_id={{ s.club_id }}">New Announcement</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 {% endblock %}
