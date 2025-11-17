@@ -23,9 +23,10 @@ login_manager.login_view = 'login'
 
 
 class User(UserMixin):
-    def __init__(self, id, username, role):
+    def __init__(self, id, username, email, role):
         self.id = id
         self.username = username
+        self.email = email
         self.role = role
 
 
@@ -35,7 +36,7 @@ def load_user(user_id):
     cursor.execute('SELECT * FROM users WHERE user_id = %s', (user_id,))
     account = cursor.fetchone()
     if account:
-        return User(id=account['user_id'], username=account['username'], role=account['role'])
+        return User(id=account['user_id'], username=account['username'], email=account['email'], role=account['role'])
     return None
 
 
@@ -70,7 +71,7 @@ def login():
         account = cursor.fetchone()
 
         if account:
-            user = User(account['user_id'], account['username'], account['role'])
+            user = User(account['user_id'], account['username'], account['email'], account['role'])
             login_user(user)
             return redirect(url_for('dashboard'))
         else:
@@ -215,6 +216,7 @@ def announcements():
         ORDER BY a.created_at DESC
     """, (current_user.id,))
     ann = cur.fetchall()
+
 
     return render_template('announcements.html', announcements=ann)
 
