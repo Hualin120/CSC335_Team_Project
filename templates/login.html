@@ -1,23 +1,109 @@
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<title> Login </title>
-		<link rel="stylesheet" href="/static/style.css"> 
-	</head>
-	<body>
-		<div class="logincontent" align="center">
-			<div class="logintop">
-				<h1>Login</h1>
-			</div></br></br></br></br>
-			<div class="loginbottom">
-			<form action="{{ url_for('login')}}" method="post" autocomplete="off">
-			<div class="msg">{{ msg }}</div>
-			<input type="text" name="username" placeholder="Enter Your Username" class="textbox" id="username" required></br></br>
-			<input type="password" name="password" placeholder="Enter Your Password" class="textbox" id="password" required></br></br></br>
-			<input type="submit" class="btn" value="Login">
-			</form></br></br>
-			<p class="worddark">New to this page? <a class="worddark" href="{{ url_for('register')}}">Register here</a></p>
-			</div>
-		</div>
-	</body>
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            width: 350px;
+            background: white;
+            padding: 35px 40px;
+            text-align: center;
+            border-radius: 16px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+        }
+
+        .login-card h1 {
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+
+        .textbox {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #cfd8dc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .textbox:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 5px rgba(74,144,226,0.4);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #357abd;
+        }
+
+
+        .register-text {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .register-text a {
+            color: #4a90e2;
+            text-decoration: none;
+        }
+
+        .register-text a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <h1>Login</h1>
+
+        <form action="{{ url_for('login') }}" method="post" autocomplete="off">
+
+            <input type="text" 
+                   name="username" 
+                   placeholder="Enter Your Username" 
+                   class="textbox"
+                   required>
+
+            <input type="password" 
+                   name="password" 
+                   placeholder="Enter Your Password" 
+                   class="textbox"
+                   required>
+
+            <input type="submit" class="btn" value="Login">
+        </form>
+
+        <p class="register-text">
+            New to this page? 
+            <a href="{{ url_for('register') }}">Register here</a>
+        </p>
+    </div>
+</body>
 </html>
+
