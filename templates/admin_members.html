@@ -1,50 +1,116 @@
 {% extends "base.html" %}
 {% block title %}Manage Members{% endblock %}
-{% block content %}
-<h2>Manage Members</h2>
 
-<table>
-  <thead>
-    <tr>
-      <th>Username</th>
-      <th>Email</th>
-      <th>Status</th>
-      <th>Dues Paid</th>
-      <th>Joined</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for m in members %}
-    <tr>
-      <td>{{ m.username }}</td>
-      <td>{{ m.email }}</td>
-      <td>{{ m.status }}</td>
-      <td>{{ 1 if m.dues_paid else 0 }}</td>
-      <td>{{ m.joined_at }}</td>
-      <td>
-        {% if m.status == 'pending' %}
-          <form method="post" action="{{ url_for('admin_approve_member', member_id=m.member_id) }}" style="display:inline">
-            <input type="hidden" name="club_id" value="{{ club_id }}">
-            <button class="btn">Approve</button>
-          </form>
-          <form method="post" action="{{ url_for('admin_deny_member', member_id=m.member_id) }}" style="display:inline">
-            <input type="hidden" name="club_id" value="{{ club_id }}">
-            <button class="btn secondary">Deny</button>
-          </form>
-        {% else %}
-          <form method="post" action="{{ url_for('admin_toggle_dues', member_id=m.member_id) }}" style="display:inline">
-            <input type="hidden" name="club_id" value="{{ club_id }}">
-            <button class="btn">Toggle Dues</button>
-          </form>
-          <form method="post" action="{{ url_for('admin_remove_member', member_id=m.member_id) }}" style="display:inline">
-            <input type="hidden" name="club_id" value="{{ club_id }}">
-            <button class="btn warn">Remove</button>
-          </form>
-        {% endif %}
-      </td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
+{% block content %}
+<h1 style="margin-bottom: 10px;">Manage Members</h1>
+
+<!-- Back link to dashboard -->
+<p>
+  <a href="{{ url_for('admin_dashboard') }}" class="btn secondary" style="margin-bottom: 14px;">← Back to Dashboard</a>
+</p>
+
+{% if not members or members|length == 0 %}
+  <div class="card">
+    <h3 style="margin-top:0;">No Members Yet</h3>
+    <p class="muted">No students have requested to join this club yet.</p>
+  </div>
+{% else %}
+
+  <table>
+    <thead>
+      <tr>
+        <th>Student</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Joined</th>
+        <th style="width: 260px;">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for m in members %}
+        <tr>
+
+          <!-- Student Name + OWNER TAG if admin -->
+          <td>
+            {{ m.username }}
+
+            {% if m.user_id == current_user.id %}
+              <span style="
+                font-size:11px; 
+                background:#dbeafe; 
+                color:#1e40af; 
+                padding:3px 6px; 
+                border-radius:8px; 
+                margin-left:6px;">
+                Owner
+              </span>
+            {% endif %}
+          </td>
+
+          <td>{{ m.email }}</td>
+
+          <!-- Status Badge -->
+          <td>
+            {% if m.status == "active" %}
+              <span style="background:#ecfdf5; color:#065f46; padding:4px 8px; border-radius:6px; font-size:12px;">Active</span>
+            {% elif m.status == "pending" %}
+              <span style="background:#fffbeb; color:#92400e; padding:4px 8px; border-radius:6px; font-size:12px;">Pending</span>
+            {% else %}
+              <span class="muted">Inactive</span>
+            {% endif %}
+          </td>
+
+          <td>{{ m.joined_at }}</td>
+
+          <!-- ACTIONS -->
+          <td>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+
+              {% if m.user_id == current_user.id %}
+                <span style="
+                  background:#e5e7eb; 
+                  color:#111827; 
+                  padding:4px 8px; 
+                  border-radius:6px; 
+                  font-size:12px;">
+                  Owner (Cannot Modify)
+                </span>
+
+              {% else %}
+
+                {% if m.status == "pending" %}
+                  <!-- Approve -->
+                  <form method="POST" action="{{ url_for('admin_approve_request', req_id=m.member_id) }}">
+                    <input type="hidden" name="club_id" value="{{ club_id }}">
+                    <button class="btn" style="padding:6px 10px;">Approve</button>
+                  </form>
+
+                  <!-- Deny -->
+                  <form method="POST" action="{{ url_for('admin_deny_member', member_id=m.member_id) }}">
+                    <input type="hidden" name="club_id" value="{{ club_id }}">
+                    <button class="btn warn" style="padding:6px 10px;">Deny</button>
+                  </form>
+                {% endif %}
+
+                {% if m.status == "active" %}
+                  <!-- Remove -->
+                  <form method="POST" action="{{ url_for('admin_remove_member', member_id=m.member_id) }}">
+                    <input type="hidden" name="club_id" value="{{ club_id }}">
+                    <button class="btn warn" style="padding:6px 10px;">Remove</button>
+                  </form>
+                {% endif %}
+
+              {% endif %}
+
+            </div>
+          </td>
+
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endif %}
+
 {% endblock %}

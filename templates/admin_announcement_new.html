@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}New Announcement{% endblock %}
+
+{% block content %}
+<h1>Create Announcement</h1>
+
+<div class="card" style="max-width: 600px; margin-top:20px;">
+
+  <form method="POST">
+    <input type="hidden" name="club_id" value="{{ club_id }}">
+
+    <label style="display:block; margin-top:10px;">Title</label>
+    <input type="text" name="title" required
+           style="width:100%; padding:10px; border-radius:8px; border:1px solid #d1d5db;">
+
+    <label style="display:block; margin-top:15px;">Announcement Body</label>
+    <textarea name="content" rows="5" required
+              style="width:100%; padding:10px; border-radius:8px; border:1px solid #d1d5db;"></textarea>
+
+    <button class="btn" type="submit" style="margin-top:15px;">Post Announcement</button>
+  </form>
+
+  <div style="margin-top:15px;">
+    <a href="{{ url_for('admin_dashboard') }}" class="btn secondary">Back to Dashboard</a>
+  </div>
+
+</div>
+
+{% endblock %}

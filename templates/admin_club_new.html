@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Create New Club{% endblock %}
+
+{% block content %}
+<h1>Create a New Club</h1>
+
+<div class="card" style="max-width:520px; margin-top:16px;">
+  <form method="POST">
+    <label style="display:block; margin-top:8px;">Club Name</label>
+    <input type="text" name="club_name" required maxlength="100"
+           placeholder="e.g., Coding Club"
+           style="width:100%; padding:10px; border-radius:8px; border:1px solid #d1d5db;">
+
+    <label style="display:block; margin-top:12px;">Description</label>
+    <textarea name="description" rows="4"
+              placeholder="What is this club about?"
+              style="width:100%; padding:10px; border-radius:8px; border:1px solid #d1d5db;"></textarea>
+
+    <div style="display:flex; gap:8px; margin-top:14px;">
+      <button class="btn" type="submit">Create Club</button>
+      <a class="btn secondary" href="{{ url_for('admin_dashboard') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
