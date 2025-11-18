@@ -4,34 +4,7 @@
   <meta charset="utf-8">
   <title>{% block title %}Club Management{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-  :root {
-    --bg:#f8fafc;
-    --card:#ffffff;
-    --text:#0f172a;
-    --muted:#6b7280;
-    --border:#e5e7eb;
-    --btn:#111827;
-    --btn-text:#ffffff;
-  }
-  * { box-sizing: border-box; }
-  body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin:0; background:var(--bg); color:var(--text); }
-  main { max-width: 1000px; margin: 24px auto; padding: 0 16px 40px; }
-  .grid { display:grid; gap:14px; }
-  .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; }
-  .btn { display:inline-block; background:var(--btn); color:var(--btn-text); padding:8px 12px; border-radius:8px; text-decoration:none; border:none; cursor:pointer; }
-  .btn.secondary { background:#374151; }
-  .btn.warn { background:#b91c1c; }
-  .muted { color:var(--muted); }
-  table { border-collapse: collapse; width:100%; background:var(--card); border-radius:12px; overflow:hidden; }
-  th, td { border-bottom:1px solid var(--border); padding:10px; text-align:left; }
-  th { background:#f3f4f6; }
-  .flash { padding:10px 12px; border-radius:8px; margin:10px 0; }
-  .flash.success { background:#ecfdf5; color:#065f46; }
-  .flash.info { background:#eff6ff; color:#1e40af; }
-  .flash.warning { background:#fffbeb; color:#92400e; }
-  .flash.error { background:#fef2f2; color:#991b1b; }
-</style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 </head>
 
@@ -41,7 +14,7 @@
   <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
     <nav style="display:flex; gap:10px; align-items:center;">
       {% if current_user.is_authenticated %}
-        <a href="{{ url_for('dashboard') }}" style="color:#e5e7eb; text-decoration:none; padding:6px 10px; border-radius:6px;">Home</a>
+        <a href="{{ url_for('dashboard') }}" class="nav-link">Home</a>
         <a href="{{ url_for('clubs') }}" style="color:#e5e7eb; text-decoration:none; padding:6px 10px; border-radius:6px;">Clubs</a>
         <a href="{{ url_for('announcements') }}" style="color:#e5e7eb; text-decoration:none; padding:6px 10px; border-radius:6px;">Announcements</a>
         {% if current_user.role == 'club_admin' %}
