@@ -29,6 +29,14 @@ class User(UserMixin):
         self.email = email
         self.role = role
 
+def log_action(user_id, action):
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute(
+        "INSERT INTO audit_log (user_id, action) VALUES (%s, %s)",
+        (user_id, action)
+    )
+    mysql.connection.commit()
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -186,12 +194,13 @@ def join_club(club_id):
         """, (current_user.id, club_id))
         mysql.connection.commit()
 
+        # Get club name for logging
+        cur.execute("SELECT club_name FROM clubs WHERE club_id = %s", (club_id,))
+        club_row = cur.fetchone()
+        club_name = club_row['club_name'] if club_row else f"Club ID {club_id}"
+
         # Log the action
-        cur.execute(
-            "INSERT INTO audit_log (user_id, action) VALUES (%s, %s)",
-            (current_user.id, f"Requested to join club {club_id}")
-        )
-        mysql.connection.commit()
+        log_action(current_user.id, f"Requested to join club {club_name}")
 
         flash("Request submitted.", "success")
 
@@ -279,9 +288,24 @@ def admin_remove_member(member_id):
     if not cur.fetchone():
         abort(403)
 
-    # remove member
-    cur.execute("DELETE FROM club_members WHERE member_id=%s", (member_id,))
+        # 1) Get username
+    cur.execute("""
+        SELECT u.username FROM club_members cm JOIN users u ON u.user_id = cm.user_id WHERE cm.member_id = %s AND cm.club_id = %s
+    """, (member_id, club_id))
+    member_row = cur.fetchone()
+    member_username = member_row['username'] if member_row else "Unknown"
+
+    # 2) Get club name
+    cur.execute("SELECT club_name FROM clubs WHERE club_id=%s", (club_id,))
+    club_row = cur.fetchone()
+    club_name = club_row['club_name'] if club_row else f"Club ID {club_id}"
+
+    # 3) remove member
+    cur.execute("DELETE FROM club_members WHERE member_id=%s AND club_id=%s", (member_id, club_id))
     mysql.connection.commit()
+
+    
+    log_action(current_user.id, f"Removed user '{member_username}' from club '{club_name}'")
 
     flash("Member removed.", "warning")
     return redirect(url_for('admin_members', club_id=club_id))
@@ -327,7 +351,6 @@ def admin_approve_request(req_id):
     if not club_id:
         abort(400)
 
-    # Make sure this admin owns this club
     cur.execute(
         "SELECT club_id FROM clubs WHERE club_id = %s AND created_by = %s",
         (club_id, current_user.id)
@@ -335,13 +358,21 @@ def admin_approve_request(req_id):
     if not cur.fetchone():
         abort(403)
 
-    # Approve the member by updating status
+    # Approve the member
     cur.execute("""
         UPDATE club_members
         SET status = 'active'
         WHERE member_id = %s AND club_id = %s
     """, (req_id, club_id))
     mysql.connection.commit()
+
+    cur.execute("select username from users where user_id = (select user_id from club_members where member_id=%s)", (req_id,))
+    member_username = cur.fetchone()['username']
+
+    cur.execute("select club_name from clubs where club_id=%s", (club_id,))
+    club_name = cur.fetchone()['club_name']
+
+    log_action(current_user.id, f"Approved member '{member_username}' for club '{club_name}' (ID {club_id})")
 
     flash("Member approved.", "success")
     return redirect(url_for('admin_members', club_id=club_id))
@@ -360,12 +391,22 @@ def admin_deny_member(member_id):
     if not cur.fetchone():
         abort(403)
 
-    # For pending memberships, just delete the row
-    cur.execute("""
-        DELETE FROM club_members
-        WHERE member_id = %s AND club_id = %s AND status = 'pending'
-    """, (member_id, club_id))
+# Get user name
+    cur.execute(""" select u.username from club_members cm join users u on u.user_id = cm.user_id where cm.member_id = %s and cm.club_id = %s and cm.status = 'pending'""", (member_id, club_id))
+    member_row = cur.fetchone()
+    member_username = member_row['username'] if member_row else "Unknown"
+
+    # Get club name
+    cur.execute("SELECT club_name FROM clubs WHERE club_id=%s", (club_id,))
+    club_row = cur.fetchone()
+    club_name = club_row['club_name'] if club_row else f"Club ID {club_id}"
+
+    # Delete the pending request
+    cur.execute("DELETE FROM club_members WHERE member_id = %s AND club_id = %s AND status = 'pending'", (member_id, club_id))
     mysql.connection.commit()
+
+    log_action(current_user.id, f"Denied user '{member_username}' from joining club '{club_name}'")
+
 
     flash("Join request denied.", "warning")
 
@@ -400,6 +441,8 @@ def admin_new_announcement():
             VALUES (%s, %s, %s, %s)
         """, (club_id, title, content, current_user.id))
         mysql.connection.commit()
+
+        log_action(current_user.id, f"Posted announcement to club ID {club_id}")
 
         flash("Announcement posted.", "success")
         return redirect(url_for('admin_dashboard'))
@@ -447,6 +490,25 @@ def admin_new_club():
             return redirect(url_for('admin_new_club'))
 
     return render_template('admin_club_new.html')
+
+
+# Auddit Log View (Admin Only)
+@app.route('/admin/logs')
+@login_required
+@admin_required
+def admin_logs():
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    cur.execute("""
+        SELECT a.action, a.timestamp, u.username
+        FROM audit_log a
+        LEFT JOIN users u ON a.user_id = u.user_id
+        ORDER BY a.timestamp DESC
+        LIMIT 200
+    """)
+    logs = cur.fetchall()
+
+    return render_template('admin_logs.html', logs=logs)
 
 
 

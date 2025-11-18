@@ -4,10 +4,17 @@
 {% block content %}
   <h1 style="margin-bottom:14px;">Admin Dashboard</h1>
 
-  <p style="text-align:right; margin-bottom:16px;">
-    <a class="btn" href="{{ url_for('admin_new_club') }}">+ Create New Club</a>
-  </p>
+  <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+  
+  <a href="{{ url_for('admin_logs') }}" class="btn">
+    View Audit Logs
+  </a>
 
+  <a class="btn" href="{{ url_for('admin_new_club') }}">
+    + Create New Club
+  </a></div>
+
+  
   {% if not summary or summary|length == 0 %}
     <div class="card">
       <h3 style="margin:0 0 6px;">No Clubs Yet</h3>

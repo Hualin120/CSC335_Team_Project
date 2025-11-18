@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Audit Logs{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 10px;">Audit Log</h1>
+
+<p>
+  <a href="{{ url_for('admin_dashboard') }}" class="btn secondary" style="margin-bottom: 14px;">← Back to Dashboard</a>
+</p>
+
+{% if not logs or logs|length == 0 %}
+  <div class="card">
+    <h3 style="margin-top:0;">No Activity Yet</h3>
+    <p class="muted">No actions have been logged yet.</p>
+  </div>
+{% else %}
+  <table>
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Action</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+        <tr>
+          <td>{{ log.username or 'Unknown User' }}</td>
+          <td>{{ log.action }}</td>
+          <td>{{ log.timestamp }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+{% endblock %}
