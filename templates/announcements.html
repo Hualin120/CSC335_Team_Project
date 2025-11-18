@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Announcements{% endblock %}
+
+{% block content %}
+<h1>Announcements</h1>
+
+<div class="grid">
+  {% for announcement in announcements %}
+    <div class="card">
+      <h3>{{ announcement.title }}</h3>
+      <p class="muted">From: <strong>{{ announcement.club_name }}</strong> — {{ announcement.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+      <p>{{ announcement.content }}</p>
+    </div>
+  {% else %}
+    <div class="card">
+      <p>No announcements available at this time.</p>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
