@@ -140,3 +140,65 @@ header {
     gap: 10px;
     align-items: center;
 }
+
+.register-container {
+            max-width: 420px;
+            margin: 60px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .register-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .msg {
+            color: red;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .textbox {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .textbox:focus {
+            border-color: #0d6efd;
+            outline: none;
+        }
+
+        .register-container .btn {
+    width: 90%;
+    padding: 10px;
+    font-size: 1rem;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.register-container .btn:hover {
+    opacity: 0.9;
+}
+
+
+        .register-footer {
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .register-footer a {
+            text-decoration: none;
+            color: #0d6efd;
+        }

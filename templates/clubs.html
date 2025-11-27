@@ -10,7 +10,7 @@
 
       {% set m = memberships.get(c.club_id) %}
 {% if m %}
-  <p>Status: <strong>{{ m.status }}</strong>{% if m.status=='active' %} — Dues Paid: <strong>{{ 1 if m.dues_paid else 0 }}</strong>{% endif %}</p>
+  <p>Status: <strong>{{ m.status }}</strong>{% if m.status=='active' %} {% endif %}</p>
 {% else %}
   {% if current_user.role == 'student' %}
     <form method="post" action="{{ url_for('join_club', club_id=c.club_id) }}">
