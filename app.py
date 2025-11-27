@@ -6,12 +6,13 @@ import MySQLdb
 import re
 from functools import wraps
 from flask import jsonify
+from flask import request
 
 app = Flask(__name__)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'QQMK983648574'
+app.config['MYSQL_PASSWORD'] = 'Hondacrv@14'
 app.config['MYSQL_DB'] = 'club_management'
 app.config['SECRET_KEY'] = 'dev_secret_key'
 
@@ -200,7 +201,7 @@ def join_club(club_id):
         club_name = club_row['club_name'] if club_row else f"Club ID {club_id}"
 
         # Log the action
-        log_action(current_user.id, f"Requested to join club {club_name}")
+        log_action(current_user.id, f"Requested to join club '{club_name}' ")
 
         flash("Request submitted.", "success")
 
@@ -288,19 +289,19 @@ def admin_remove_member(member_id):
     if not cur.fetchone():
         abort(403)
 
-        # 1) Get username
+        # Get username
     cur.execute("""
         SELECT u.username FROM club_members cm JOIN users u ON u.user_id = cm.user_id WHERE cm.member_id = %s AND cm.club_id = %s
     """, (member_id, club_id))
     member_row = cur.fetchone()
     member_username = member_row['username'] if member_row else "Unknown"
 
-    # 2) Get club name
+    # Get club name
     cur.execute("SELECT club_name FROM clubs WHERE club_id=%s", (club_id,))
     club_row = cur.fetchone()
     club_name = club_row['club_name'] if club_row else f"Club ID {club_id}"
 
-    # 3) remove member
+    # remove member
     cur.execute("DELETE FROM club_members WHERE member_id=%s AND club_id=%s", (member_id, club_id))
     mysql.connection.commit()
 
@@ -372,7 +373,7 @@ def admin_approve_request(req_id):
     cur.execute("select club_name from clubs where club_id=%s", (club_id,))
     club_name = cur.fetchone()['club_name']
 
-    log_action(current_user.id, f"Approved member '{member_username}' for club '{club_name}' (ID {club_id})")
+    log_action(current_user.id, f"Approved member '{member_username}' for club '{club_name}' ")
 
     flash("Member approved.", "success")
     return redirect(url_for('admin_members', club_id=club_id))
@@ -442,7 +443,12 @@ def admin_new_announcement():
         """, (club_id, title, content, current_user.id))
         mysql.connection.commit()
 
-        log_action(current_user.id, f"Posted announcement to club ID {club_id}")
+        # Get club name for logs
+        cur.execute("SELECT club_name FROM clubs WHERE club_id=%s", (club_id,))
+        club_row = cur.fetchone()
+        club_name = club_row['club_name'] if club_row else f"Club ID {club_id}"
+
+        log_action(current_user.id, f"Posted announcement to {club_name}")
 
         flash("Announcement posted.", "success")
         return redirect(url_for('admin_dashboard'))
@@ -491,25 +497,73 @@ def admin_new_club():
 
     return render_template('admin_club_new.html')
 
-
-# Auddit Log View (Admin Only)
+# ADMIN: VIEW AUDIT LOGS
 @app.route('/admin/logs')
 @login_required
 @admin_required
 def admin_logs():
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
-    cur.execute("""
+    # --- Filters ---
+    username = request.args.get('username', '').strip()
+    action = request.args.get('action', '').strip()
+
+    # --- Pagination ---
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    # --- WHERE clause ---
+    where_clauses = []
+    params = []
+
+    if username:
+        where_clauses.append("u.username LIKE %s")
+        params.append(f"%{username}%")
+
+    if action:
+        where_clauses.append("a.action LIKE %s")
+        params.append(f"%{action}%")
+
+    
+    if where_clauses:
+        where_sql = "WHERE " + " AND ".join(where_clauses)
+    else:
+        where_sql = ""  
+
+    # --- Count ---
+    count_query = f"""
+        SELECT COUNT(*) AS total
+        FROM audit_log a
+        LEFT JOIN users u ON a.user_id = u.user_id
+        {where_sql}
+    """
+    cur.execute(count_query, params)
+    total = cur.fetchone()['total']
+    total_pages = (total + per_page - 1) // per_page
+
+    # --- Data ---
+    data_query = f"""
         SELECT a.action, a.timestamp, u.username
         FROM audit_log a
         LEFT JOIN users u ON a.user_id = u.user_id
+        {where_sql}
         ORDER BY a.timestamp DESC
-        LIMIT 200
-    """)
+        LIMIT %s, %s
+    """
+
+    cur.execute(data_query, params + [offset, per_page])
     logs = cur.fetchall()
 
-    return render_template('admin_logs.html', logs=logs)
-
+    return render_template(
+        'admin_logs.html',
+        logs=logs,
+        username=username,
+        action=action,
+        page=page,
+        total_pages=total_pages,
+        total=total
+    )
 
 
 if __name__ == '__main__':
