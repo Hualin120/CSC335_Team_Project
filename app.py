@@ -232,6 +232,7 @@ def announcements():
 
 
 
+
 # ADMIN DASHBOARD
 
 @app.route('/admin_dashboard')
@@ -454,6 +455,47 @@ def admin_new_announcement():
         return redirect(url_for('admin_dashboard'))
 
     return render_template('admin_announcement_new.html', club_id=club_id)
+
+
+
+
+#Delete announcements by Admin
+@app.route('/announcements/<int:announcement_id>/remove', methods=['POST'])
+@login_required
+@admin_required
+def announcements_delete(announcement_id):
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    cur.execute("""
+        SELECT a.*, c.club_name, c.created_by 
+        FROM club_announcements a
+        JOIN clubs c ON a.club_id = c.club_id
+        WHERE a.announcement_id = %s
+    """, (announcement_id,))
+    
+    announcement = cur.fetchone()
+
+    if not announcement:
+        flash("Announcement not found.", "error")
+        return redirect(url_for('admin_dashboard'))
+
+    # confirm this admin owns the club
+    if announcement['created_by'] != current_user.id:
+        abort(403)
+
+    #Delete announcement
+    cur.execute("DELETE FROM club_announcements WHERE announcement_id = %s", (announcement_id,))
+    mysql.connection.commit()
+
+    log_action(current_user.id, f"Deleted announcement '{announcement['title']}' from club '{announcement['club_name']}'")
+
+    flash("Announcement removed successfully.", "success")
+    return redirect(url_for('announcements'))
+
+
+
+
+
 
 #admin create new club
 @app.route('/admin/clubs/new', methods=['GET', 'POST'])
