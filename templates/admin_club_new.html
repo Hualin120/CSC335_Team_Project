@@ -1,25 +1,185 @@
 {% extends "base.html" %}
 {% block title %}Create New Club{% endblock %}
-
 {% block content %}
-<h1>Create a New Club</h1>
+<style>
+.create-club-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+}
 
-<div class="card" style="max-width:520px; margin-top:16px;">
-  <form method="POST">
-    <label style="display:block; margin-top:8px;">Club Name</label>
-    <input type="text" name="club_name" required maxlength="100"
-           placeholder="e.g., Coding Club"
-           style="width:100%; padding:10px; border-radius:8px; border:1px solid #d1d5db;">
+.page-header {
+  margin-bottom: 25px;
+}
 
-    <label style="display:block; margin-top:12px;">Description</label>
-    <textarea name="description" rows="4"
-              placeholder="What is this club about?"
-              style="width:100%; padding:10px; border-radius:8px; border:1px solid #d1d5db;"></textarea>
+.page-header h1 {
+  color: #1f2937;
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
 
-    <div style="display:flex; gap:8px; margin-top:14px;">
-      <button class="btn" type="submit">Create Club</button>
-      <a class="btn secondary" href="{{ url_for('admin_dashboard') }}">Cancel</a>
-    </div>
-  </form>
+.page-header p {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.form-card {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #374151;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.required {
+  color: #dc2626;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.helper-text {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: #1654c8;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2290f8;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+@media (max-width: 640px) {
+  .create-club-container {
+    margin: 20px;
+    padding: 15px;
+  }
+  
+  .form-card {
+    padding: 20px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+</style>
+
+<div class="create-club-container">
+  <div class="page-header">
+    <h1>Create a New Club</h1>
+    <p>Fill out the information below to create your club</p>
+  </div>
+
+  <div class="form-card">
+    <form method="POST" action="{{ url_for('admin_new_club') }}">
+      <div class="form-group">
+        <label class="form-label" for="club_name">
+          Club Name <span class="required">*</span>
+        </label>
+        <input 
+          type="text" 
+          id="club_name" 
+          name="club_name" 
+          class="form-input" 
+          placeholder="e.g., Chess Club, Photography Club"
+          maxlength="100"
+          required
+        >
+        <div class="helper-text">Maximum 100 characters</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="description">
+          Description
+        </label>
+        <textarea 
+          id="description" 
+          name="description" 
+          class="form-input form-textarea" 
+          placeholder="Describe your club's purpose and activities"
+        ></textarea>
+        <div class="helper-text">Help students understand what your club is about</div>
+      </div>
+
+      <div class="form-actions">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+          Cancel
+        </a>
+        <button type="submit" class="btn btn-primary">
+          Create Club
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
+
 {% endblock %}

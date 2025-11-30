@@ -1,84 +1,88 @@
-{% extends "base.html" %}
-
-{% block title %}Welcome{% endblock %}
-
-{% block content %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Welcome</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<main>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+<div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  
 <style>
-  .welcome-container {
-    max-width: 600px;
-    margin: 60px auto;
-    padding: 30px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    background-color: #fafafa;
-    text-align: center;
+.welcome-container {
+max-width: 600px;
+margin: 60px auto;
+padding: 30px;
+border-radius: 8px;
+border: 1px solid #ddd;
+background-color: #fafafa;
+text-align: center;
   }
-
-  .welcome-title {
-    margin-bottom: 10px;
-    font-size: 1.8rem;
+.welcome-title {
+margin-bottom: 10px;
+font-size: 1.8rem;
   }
-
-  .welcome-subtitle {
-    margin-bottom: 20px;
-    color: #555;
-    font-size: 0.95rem;
+.welcome-subtitle {
+margin-bottom: 20px;
+color: #555;
+font-size: 0.95rem;
   }
-
-  .welcome-note {
-    margin-bottom: 20px;
-    color: #777;
-    font-size: 0.85rem;
+.welcome-note {
+margin-bottom: 20px;
+color: #777;
+font-size: 0.85rem;
   }
-
-  .welcome-actions {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
+.welcome-actions {
+margin-top: 10px;
+display: flex;
+justify-content: center;
+gap: 10px;
+flex-wrap: wrap;
   }
-
-  .welcome-btn {
-    padding: 8px 18px;
-    border-radius: 4px;
-    border: 1px solid #007bff;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    font-size: 0.95rem;
+.welcome-btn {
+padding: 8px 18px;
+border-radius: 4px;
+border: 1px solid #007bff;
+background-color: #007bff;
+color: white;
+cursor: pointer;
+font-size: 0.95rem;
   }
-
-  .welcome-btn.secondary {
-    background-color: white;
-    color: #007bff;
+.welcome-btn.secondary {
+background-color: white;
+color: #007bff;
   }
-
-  .welcome-btn:hover {
-    opacity: 0.9;
+.welcome-btn:hover {
+opacity: 0.9;
   }
 </style>
-
 <div class="welcome-container">
-  <h1 class="welcome-title">Welcome to the Club Management System</h1>
-
-  <p class="welcome-subtitle">
+<h1 class="welcome-title">Welcome to the Club Management System</h1>
+<p class="welcome-subtitle">
     This system is used by students and club administrators to manage clubs,
     members, and announcements.
-  </p>
-
-  <p class="welcome-note">
+</p>
+<p class="welcome-note">
     Students can register for an account to join clubs.<br>
     Admins should log in with their existing credentials.
-  </p>
-
-  <div class="welcome-actions">
-    <a href="{{ url_for('login') }}">
-      <button class="welcome-btn">Log In</button>
-    </a>
-    <a href="{{ url_for('register') }}">
-      <button class="welcome-btn secondary">Register as Student</button>
-    </a>
-  </div>
+</p>
+<div class="welcome-actions">
+<a href="{{ url_for('login') }}">
+<button class="welcome-btn">Log In</button>
+</a>
+<a href="{{ url_for('register') }}">
+<button class="welcome-btn secondary">Register as Student</button>
+</a>
 </div>
-{% endblock %}
+</div>
+</main>
+</body>
+</html>
