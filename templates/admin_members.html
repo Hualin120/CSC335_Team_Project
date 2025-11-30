@@ -1,116 +1,294 @@
 {% extends "base.html" %}
 {% block title %}Manage Members{% endblock %}
-
 {% block content %}
-<h1 style="margin-bottom: 10px;">Manage Members</h1>
+<style>
+.members-page {
+  max-width: 1000px;
+  margin: 35px auto;
+  padding: 20px;
+}
 
-<!-- Back link to dashboard -->
-<p>
-  <a href="{{ url_for('admin_dashboard') }}" class="btn secondary" style="margin-bottom: 14px;">← Back to Dashboard</a>
-</p>
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
 
-{% if not members or members|length == 0 %}
-  <div class="card">
-    <h3 style="margin-top:0;">No Members Yet</h3>
-    <p class="muted">No students have requested to join this club yet.</p>
+.page-title {
+  font-size: 1.8rem;
+  color: #212529;
+  font-weight: 600;
+  margin: 0;
+}
+
+.back-btn {
+  padding: 8px 16px;
+  background: #f8f9fa;
+  color: #495057;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: #e9ecef;
+}
+
+.members-table-box {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.members-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.members-table thead {
+  background: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.members-table th {
+  padding: 12px 15px;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #495057;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.members-table td {
+  padding: 14px 15px;
+  border-bottom: 1px solid #f1f3f5;
+  font-size: 0.9rem;
+  color: #495057;
+  vertical-align: middle;
+}
+
+.members-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.members-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.member-name {
+  font-weight: 500;
+  color: #212529;
+}
+
+.owner-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  background: #111827;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-inactive {
+  background: #e9ecef;
+  color: #6c757d;
+}
+
+.action-btns {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-approve {
+  background: #28a745;
+  color: white;
+}
+
+.btn-approve:hover {
+  background: #218838;
+}
+
+.btn-deny {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-deny:hover {
+  background: #c82333;
+}
+
+.btn-remove {
+  background: #ffc107;
+  color: #212529;
+}
+
+.btn-remove:hover {
+  background: #e0a800;
+}
+
+.owner-notice {
+  background: #e9ecef;
+  color: #495057;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.empty-state {
+  padding: 50px 30px;
+  text-align: center;
+}
+
+.empty-state h3 {
+  font-size: 1.3rem;
+  color: #212529;
+  margin: 0 0 8px 0;
+}
+
+.empty-state p {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .members-page {
+    padding: 15px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .members-table-box {
+    overflow-x: auto;
+  }
+
+  .action-btns {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+</style>
+
+<div class="members-page">
+  <div class="page-header">
+    <h1 class="page-title">Manage Members</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="back-btn">← Back to Dashboard</a>
   </div>
-{% else %}
 
-  <table>
-    <thead>
-      <tr>
-        <th>Student</th>
-        <th>Email</th>
-        <th>Status</th>
-        <th>Joined</th>
-        <th style="width: 260px;">Actions</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      {% for m in members %}
+  {% if not members or members|length == 0 %}
+  <div class="members-table-box">
+    <div class="empty-state">
+      <h3>No Members Yet</h3>
+      <p>No students have requested to join this club yet.</p>
+    </div>
+  </div>
+  {% else %}
+  <div class="members-table-box">
+    <table class="members-table">
+      <thead>
         <tr>
-
-          <!-- Student Name + OWNER TAG if admin -->
+          <th>Student</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Joined</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in members %}
+        <tr>
           <td>
-            {{ m.username }}
-
+            <span class="member-name">{{ m.username }}</span>
             {% if m.user_id == current_user.id %}
-              <span style="
-                font-size:11px; 
-                background:#dbeafe; 
-                color:#1e40af; 
-                padding:3px 6px; 
-                border-radius:8px; 
-                margin-left:6px;">
-                Owner
-              </span>
+              <span class="owner-tag">Owner</span>
             {% endif %}
           </td>
-
           <td>{{ m.email }}</td>
-
-          <!-- Status Badge -->
           <td>
             {% if m.status == "active" %}
-              <span style="background:#ecfdf5; color:#065f46; padding:4px 8px; border-radius:6px; font-size:12px;">Active</span>
+              <span class="status-badge status-active">Active</span>
             {% elif m.status == "pending" %}
-              <span style="background:#fffbeb; color:#92400e; padding:4px 8px; border-radius:6px; font-size:12px;">Pending</span>
+              <span class="status-badge status-pending">Pending</span>
             {% else %}
-              <span class="muted">Inactive</span>
+              <span class="status-badge status-inactive">Inactive</span>
             {% endif %}
           </td>
-
           <td>{{ m.joined_at }}</td>
-
-          <!-- ACTIONS -->
           <td>
-            <div style="display:flex; gap:6px; flex-wrap:wrap;">
-
+            <div class="action-btns">
               {% if m.user_id == current_user.id %}
-                <span style="
-                  background:#e5e7eb; 
-                  color:#111827; 
-                  padding:4px 8px; 
-                  border-radius:6px; 
-                  font-size:12px;">
-                  Owner (Cannot Modify)
-                </span>
-
+                <span class="owner-notice">Owner</span>
               {% else %}
-
                 {% if m.status == "pending" %}
-                  <!-- Approve -->
-                  <form method="POST" action="{{ url_for('admin_approve_request', req_id=m.member_id) }}">
+                  <form method="POST" action="{{ url_for('admin_approve_request', req_id=m.member_id) }}" style="display: inline;">
                     <input type="hidden" name="club_id" value="{{ club_id }}">
-                    <button class="btn" style="padding:6px 10px;">Approve</button>
+                    <button class="action-btn btn-approve" type="submit">Approve</button>
                   </form>
-
-                  <!-- Deny -->
-                  <form method="POST" action="{{ url_for('admin_deny_member', member_id=m.member_id) }}">
+                  <form method="POST" action="{{ url_for('admin_deny_member', member_id=m.member_id) }}" style="display: inline;">
                     <input type="hidden" name="club_id" value="{{ club_id }}">
-                    <button class="btn warn" style="padding:6px 10px;">Deny</button>
+                    <button class="action-btn btn-deny" type="submit">Deny</button>
                   </form>
                 {% endif %}
-
                 {% if m.status == "active" %}
-                  <!-- Remove -->
-                  <form method="POST" action="{{ url_for('admin_remove_member', member_id=m.member_id) }}">
+                  <form method="POST" action="{{ url_for('admin_remove_member', member_id=m.member_id) }}" style="display: inline;">
                     <input type="hidden" name="club_id" value="{{ club_id }}">
-                    <button class="btn warn" style="padding:6px 10px;">Remove</button>
+                    <button class="action-btn btn-remove" type="submit">Remove</button>
                   </form>
                 {% endif %}
-
               {% endif %}
-
             </div>
           </td>
-
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
-{% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
 
 {% endblock %}

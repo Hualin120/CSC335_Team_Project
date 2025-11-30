@@ -1,139 +1,255 @@
 {% extends "base.html" %}
 {% block title %}Audit Logs{% endblock %}
-
 {% block content %}
-<h1>Audit Logs</h1>
-
 <style>
-  .audit-filters {
-    margin-bottom: 15px;
+.logs-page {
+  max-width: 950px;
+  margin: 35px auto;
+  padding: 20px;
+}
+
+.page-top {
+  margin-bottom: 25px;
+}
+
+.page-top h1 {
+  font-size: 1.8rem;
+  color: #212529;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.filter-bar input {
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  width: 180px;
+}
+
+.filter-bar input:focus {
+  outline: none;
+  border-color: #495057;
+}
+
+.filter-bar button {
+  background: #111827;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.filter-bar button:hover {
+  background: #1f2937;
+}
+
+.filter-bar a {
+  color: #495057;
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 8px 12px;
+}
+
+.filter-bar a:hover {
+  color: #212529;
+}
+
+.logs-box {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.log-table thead {
+  background: #f1f3f5;
+}
+
+.log-table th {
+  padding: 12px 15px;
+  text-align: left;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.log-table td {
+  padding: 12px 15px;
+  border-top: 1px solid #e9ecef;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.log-table tr:hover {
+  background: #f8f9fa;
+}
+
+.user-col {
+  font-weight: 500;
+  color: #212529;
+}
+
+.time-col {
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.no-logs {
+  padding: 40px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.pages-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.page-link {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  background: white;
+  color: #495057;
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+
+.page-link:hover {
+  background: #f8f9fa;
+}
+
+.page-link.current {
+  background: #111827;
+  color: white;
+  border-color: #111827;
+  font-weight: 600;
+}
+
+.page-link.off {
+  background: #f8f9fa;
+  color: #adb5bd;
+  border-color: #e9ecef;
+  pointer-events: none;
+}
+
+.page-info {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-left: 10px;
+}
+
+@media (max-width: 768px) {
+  .logs-page {
+    padding: 15px;
   }
-  .audit-filters label {
-    margin-right: 12px;
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
   }
-  .audit-pagination {
-    text-align: center;
-    margin-top: 12px;
+
+  .filter-bar input,
+  .filter-bar button {
+    width: 100%;
   }
-  .pagination-btn {
-    display: inline-block;
-    padding: 4px 10px;
-    margin: 0 2px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    text-decoration: none;
-    font-size: 0.9rem;
-    color: #333;
-    background-color: #f8f8f8;
+
+  .logs-box {
+    overflow-x: auto;
   }
-  .pagination-btn:hover {
-    background-color: #e8e8e8;
+
+  .pages-bar {
+    flex-wrap: wrap;
   }
-  .pagination-btn.current {
-    font-weight: bold;
-    background-color: #333;
-    color: #fff;
-    border-color: #333;
-    cursor: default;
-  }
-  .pagination-btn.disabled {
-    color: #aaa;
-    border-color: #eee;
-    background-color: #f5f5f5;
-    pointer-events: none;
-    cursor: default;
-  }
-  .pagination-info {
-    margin-top: 6px;
-    font-size: 0.85rem;
-    color: #555;
-  }
+}
 </style>
 
-<!-- Simple Filters -->
-<form method="get" class="audit-filters">
-  <label>
-    Username:
-    <input type="text" name="username" value="{{ username }}">
-  </label>
+<div class="logs-page">
+  <div class="page-top">
+    <h1>Audit Logs</h1>
+    
+    <form method="get" class="filter-bar">
+      <input type="text" name="username" value="{{ username }}" placeholder="Username">
+      <input type="text" name="action" value="{{ action }}" placeholder="Action">
+      <button type="submit">Filter</button>
+      <a href="{{ url_for('admin_logs') }}">Clear</a>
+    </form>
+  </div>
 
-  <label>
-    Action:
-    <input type="text" name="action" value="{{ action }}">
-  </label>
+  <div class="logs-box">
+    <table class="log-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Action</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td class="user-col">{{ log.username or 'System' }}</td>
+          <td>{{ log.action }}</td>
+          <td class="time-col">{{ log.timestamp }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="3" class="no-logs">No logs found</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
-  <button type="submit">Filter</button>
-  <a href="{{ url_for('admin_logs') }}">Reset</a>
-</form>
-
-<table border="1" cellpadding="4" cellspacing="0" style="width: 100%; border-collapse: collapse;">
-  <thead>
-    <tr>
-      <th>Username</th>
-      <th>Action</th>
-      <th>Timestamp</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for log in logs %}
-      <tr>
-        <td>{{ log.username or 'System' }}</td>
-        <td>{{ log.action }}</td>
-        <td>{{ log.timestamp }}</td>
-      </tr>
-    {% else %}
-      <tr>
-        <td colspan="3" style="text-align:center;">No logs found.</td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-<!-- Pagination + Page Info at Bottom -->
-{% if total_pages > 1 %}
-  <div class="audit-pagination">
-
-    {# Previous button #}
+  {% if total_pages > 1 %}
+  <div class="pages-bar">
     {% if page > 1 %}
-      <a class="pagination-btn"
-         href="{{ url_for('admin_logs', page=page-1, username=username, action=action) }}">
-        « Prev
-      </a>
+      <a class="page-link" href="{{ url_for('admin_logs', page=page-1, username=username, action=action) }}">← Prev</a>
     {% else %}
-      <span class="pagination-btn disabled">« Prev</span>
+      <span class="page-link off">← Prev</span>
     {% endif %}
 
-    {# Page numbers #}
     {% for p in range(1, total_pages + 1) %}
       {% if p == page %}
-        <span class="pagination-btn current">{{ p }}</span>
+        <span class="page-link current">{{ p }}</span>
       {% else %}
-        <a class="pagination-btn"
-           href="{{ url_for('admin_logs', page=p, username=username, action=action) }}">
-          {{ p }}
-        </a>
+        <a class="page-link" href="{{ url_for('admin_logs', page=p, username=username, action=action) }}">{{ p }}</a>
       {% endif %}
     {% endfor %}
 
-    {# Next button #}
     {% if page < total_pages %}
-      <a class="pagination-btn"
-         href="{{ url_for('admin_logs', page=page+1, username=username, action=action) }}">
-        Next »
-      </a>
+      <a class="page-link" href="{{ url_for('admin_logs', page=page+1, username=username, action=action) }}">Next →</a>
     {% else %}
-      <span class="pagination-btn disabled">Next »</span>
+      <span class="page-link off">Next →</span>
     {% endif %}
 
-    <div class="pagination-info">
-      Page {{ page }} of {{ total_pages }} &nbsp;|&nbsp; Total logs: {{ total }}
-    </div>
+    <span class="page-info">{{ page }}/{{ total_pages }} ({{ total }} logs)</span>
   </div>
-{% else %}
-  <div class="audit-pagination">
-    <div class="pagination-info">
-      Page {{ page }} of {{ total_pages }} &nbsp;|&nbsp; Total logs: {{ total }}
-    </div>
-  </div>
-{% endif %}
+  {% endif %}
+</div>
+
 {% endblock %}
