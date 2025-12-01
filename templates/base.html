@@ -18,10 +18,9 @@
         <a href="{{ url_for('clubs') }}" style="color:#e5e7eb; text-decoration:none; padding:6px 10px; border-radius:6px;">Clubs</a>
         <a href="{{ url_for('announcements') }}" style="color:#e5e7eb; text-decoration:none; padding:6px 10px; border-radius:6px;">Announcements</a>
 <!--
-        {% if current_user.role == 'club_admin' %}
+      {% if current_user.role == 'club_admin' %}
           <a href="{{ url_for('admin_dashboard') }}" style="color:#e5e7eb; text-decoration:none; padding:6px 10px; border-radius:6px;">Admin</a>
-        {% endif %}        
-
+        {% endif %}
 -->
       {% else %}
         <a href="{{ url_for('index') }}" style="color:#e5e7eb; text-decoration:none; padding:6px 10px; border-radius:6px;">Home</a>
