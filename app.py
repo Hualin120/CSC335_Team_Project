@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Hondacrv@14'
+app.config['MYSQL_PASSWORD'] = 'QQmk983648574'
 app.config['MYSQL_DB'] = 'club_management'
 app.config['SECRET_KEY'] = 'dev_secret_key'
 
@@ -538,6 +538,40 @@ def admin_new_club():
             return redirect(url_for('admin_new_club'))
 
     return render_template('admin_club_new.html')
+
+
+
+
+#Delete club by Admin
+@app.route('/clubs/<int:club_id>/remove', methods=['POST'])
+@login_required
+@admin_required
+def clubs_delete(club_id):
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    
+    cur.execute("""SELECT club_id, club_name, created_by FROM clubs WHERE club_id = %s""", (club_id,))
+    
+    club = cur.fetchone()
+
+    if not club:
+        flash("Club not found.", "error")
+        return redirect(url_for('admin_dashboard'))
+
+    # confirm this admin owns the club
+    if club['created_by'] != current_user.id:
+        abort(403)
+
+    #Delete club
+    cur.execute("DELETE FROM clubs WHERE club_id = %s", (club_id,))
+    mysql.connection.commit()
+
+    log_action(current_user.id, f"Deleted Club '{club['club_name']}'")
+
+    flash("Clubs removed successfully.", "success")
+    return redirect(url_for('admin_dashboard'))
+
+
+
 
 # ADMIN: VIEW AUDIT LOGS
 @app.route('/admin/logs')
