@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'QQmk983648574'
+app.config['MYSQL_PASSWORD'] = 'Hondacrv@14'
 app.config['MYSQL_DB'] = 'club_management'
 app.config['SECRET_KEY'] = 'dev_secret_key'
 
@@ -290,7 +290,7 @@ def admin_remove_member(member_id):
     if not cur.fetchone():
         abort(403)
 
-        # Get username
+    # Get username
     cur.execute("""
         SELECT u.username FROM club_members cm JOIN users u ON u.user_id = cm.user_id WHERE cm.member_id = %s AND cm.club_id = %s
     """, (member_id, club_id))
@@ -393,7 +393,7 @@ def admin_deny_member(member_id):
     if not cur.fetchone():
         abort(403)
 
-# Get user name
+    # Get user name
     cur.execute(""" select u.username from club_members cm join users u on u.user_id = cm.user_id where cm.member_id = %s and cm.club_id = %s and cm.status = 'pending'""", (member_id, club_id))
     member_row = cur.fetchone()
     member_username = member_row['username'] if member_row else "Unknown"
@@ -479,7 +479,6 @@ def announcements_delete(announcement_id):
         flash("Announcement not found.", "error")
         return redirect(url_for('admin_dashboard'))
 
-    # confirm this admin owns the club
     if announcement['created_by'] != current_user.id:
         abort(403)
 
@@ -580,16 +579,16 @@ def clubs_delete(club_id):
 def admin_logs():
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
-    # --- Filters ---
+    # Filters
     username = request.args.get('username', '').strip()
     action = request.args.get('action', '').strip()
 
-    # --- Pagination ---
+    # Pagination
     page = request.args.get('page', 1, type=int)
     per_page = 10
     offset = (page - 1) * per_page
 
-    # --- WHERE clause ---
+    # WHERE clause
     where_clauses = []
     params = []
 
@@ -607,7 +606,7 @@ def admin_logs():
     else:
         where_sql = ""  
 
-    # --- Count ---
+    # Count
     count_query = f"""
         SELECT COUNT(*) AS total
         FROM audit_log a
@@ -618,7 +617,7 @@ def admin_logs():
     total = cur.fetchone()['total']
     total_pages = (total + per_page - 1) // per_page
 
-    # --- Data ---
+    # Data
     data_query = f"""
         SELECT a.action, a.timestamp, u.username
         FROM audit_log a
