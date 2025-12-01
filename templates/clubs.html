@@ -1,173 +1,187 @@
+{% extends "base.html" %}
+{% block title %}Clubs{% endblock %}
+{% block content %}
 <style>
-  /* Layout */
-  .page-wrapper {
-    max-width: 720px;
-    margin: 24px auto;
-    padding: 0 16px;
-    font-family: system-ui, sans-serif;
+.clubs-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.page-header {
+  margin-bottom: 35px;
+}
+
+.page-header h1 {
+  color: #212529;
+  font-size: 2rem;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+
+.page-header p {
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+.clubs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.club-card {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 24px;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.club-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #111827;
+}
+
+.club-name {
+  color: #212529;
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+}
+
+.club-description {
+  color: #6c757d;
+  font-size: 0.93rem;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  flex-grow: 1;
+}
+
+.club-status {
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.status-text {
+  font-size: 0.9rem;
+  color: #495057;
+  margin: 0;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-left: 6px;
+}
+
+.status-active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.btn-join {
+  background: #111827;
+  color: white;
+  border: none;
+  padding: 11px 20px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.btn-join:hover {
+  background: #1f2937;
+}
+
+.no-clubs {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+.no-clubs-text {
+  color: #6c757d;
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .clubs-container {
+    padding: 15px;
+    margin: 20px auto;
   }
 
-  .page-header h1 {
-    font-size: 1.75rem;
-    margin-bottom: 4px;
-    font-weight: 700;
+  .clubs-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 
-  .page-subtitle {
-    color: #6b7280;
-    font-size: 0.95rem;
-    margin-bottom: 16px;
-    max-width: 520px;
+  .club-card {
+    padding: 20px;
   }
-
-  /* Card */
-  .card-form {
-    margin-top: 16px;
-    padding: 24px 24px 20px;
-    border-radius: 16px;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
-  }
-
-  /* Form */
-  .form-group {
-    margin-bottom: 18px;
-  }
-
-  .form-label {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: #111827;
-  }
-
-  .form-label-tag {
-    font-size: 0.75rem;
-    color: #9ca3af;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .input-field {
-    width: 100%;
-    margin-top: 6px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid #d1d5db;
-    font-size: 0.95rem;
-    background-color: #f9fafb;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease,
-      background-color 0.15s ease;
-  }
-
-  .input-field:focus {
-    outline: none;
-    border-color: #2563eb;
-    background-color: #ffffff;
-    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.18);
-  }
-
-  .textarea-field {
-    resize: vertical;
-    min-height: 120px;
-  }
-
-  .form-help {
-    margin-top: 4px;
-    font-size: 0.8rem;
-    color: #9ca3af;
-  }
-
-  /* Actions */
-  .form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 12px;
-  }
-
-  /* Buttons */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 16px;
-    border-radius: 999px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background-color 0.15s ease, box-shadow 0.15s ease,
-      transform 0.05s ease;
-  }
-
-  .btn-primary {
-    background-color: #2563eb;
-    color: #ffffff;
-    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
-  }
-
-  .btn-primary:hover {
-    background-color: #1d4ed8;
-  }
-
-  .btn-secondary {
-    background-color: #f3f4f6;
-    color: #374151;
-  }
-
-  .btn-secondary:hover {
-    background-color: #e5e7eb;
-  }
-
-  .btn:active {
-    transform: translateY(1px);
-    box-shadow: none;
-  }
+}
 </style>
 
-<div class="page-wrapper">
+<div class="clubs-container">
   <div class="page-header">
-    <h1>Create a New Club</h1>
-    <p class="page-subtitle">
-      Add a new student club so members can discover it and stay connected.
-    </p>
+    <h1>Clubs</h1>
+    <p>Explore and join student organizations</p>
   </div>
 
-  <div class="card-form">
-    <form method="POST">
-      <div class="form-group">
-        <label for="club_name" class="form-label">
-          Club Name
-          <span class="form-label-tag">Required</span>
-        </label>
-        <input id="club_name" type="text" name="club_name"
-               required maxlength="100"
-               placeholder="e.g., Coding Club"
-               class="input-field">
-        <p class="form-help">
-          Choose a clear, recognizable name students will search for.
-        </p>
-      </div>
-
-      <div class="form-group">
-        <label for="description" class="form-label">Description</label>
-        <textarea id="description" name="description" rows="4"
-                  placeholder="What is this club about? What events will you host?"
-                  class="input-field textarea-field"></textarea>
-        <p class="form-help">
-          A short, friendly summary helps students quickly understand your club.
-        </p>
-      </div>
-
-      <div class="form-actions">
-        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Cancel</a>
-        <button type="submit" class="btn btn-primary">Create Club</button>
-      </div>
-    </form>
+  {% if clubs %}
+  <div class="clubs-grid">
+    {% for c in clubs %}
+    <div class="club-card">
+      <h3 class="club-name">{{ c.club_name }}</h3>
+      <p class="club-description">{{ c.description or 'No description available.' }}</p>
+      
+      {% set m = memberships.get(c.club_id) %}
+      {% if m %}
+        <div class="club-status">
+          <p class="status-text">
+            Membership: 
+            {% if m.status == 'active' %}
+              <span class="status-badge status-active">Active Member</span>
+            {% elif m.status == 'pending' %}
+              <span class="status-badge status-pending">Pending Approval</span>
+            {% else %}
+              <span class="status-badge">{{ m.status }}</span>
+            {% endif %}
+          </p>
+        </div>
+      {% else %}
+        {% if current_user.role == 'student' %}
+        <form method="post" action="{{ url_for('join_club', club_id=c.club_id) }}">
+          <button class="btn-join" type="submit">Request to Join</button>
+        </form>
+        {% endif %}
+      {% endif %}
+    </div>
+    {% endfor %}
   </div>
+  {% else %}
+  <div class="no-clubs">
+    <p class="no-clubs-text">No clubs available yet.</p>
+  </div>
+  {% endif %}
 </div>
+
+{% endblock %}
